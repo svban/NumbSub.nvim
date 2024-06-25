@@ -1,12 +1,15 @@
 ## Description
 - This plugin will replace the pattern with the list of numbers generated.
+- Its basically g<C-a> or g<C-x> on steroids from command-line 
+- ~250 SLOC - super lightweight plugin
+- See (examples)[https://github.com/svban/NumbSub.nvim?tab=readme-ov-file#examples] to better understand
 
 ## Installation
 ###  with Lazy.nvim
 ``` lua
     {
         "svban/NumbSub.nvim",
-        cmd = { "NumbSub" },
+        cmd = { "NumbSub" }, -- lazy laod on this command only
         opts = {},
     },
 ```
@@ -131,3 +134,7 @@ define MEM_ADD2 -6
 define MEM_ADD3 -7
 define MEM_ADD3 -8
 ```
+
+## Inspirations
+- [Increment.vim](https://www.vim.org/scripts/script.php?script_id=842) - William Natter
+- [Increment_new.vim](https://www.vim.org/scripts/script.php?script_id=1199) - Ely Schoenfeld
