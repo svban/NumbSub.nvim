@@ -51,7 +51,7 @@ define MEM_ADD3 0
 
 ### After
 ``` vim
-:NumbSub s1 p@ S1 n2 ms
+:NumbSub s1 p\d\+$ S1 n2 ms
 define MEM_ADD0 1
 define MEM_ADD1 1
 define MEM_ADD1 2
