@@ -1,7 +1,6 @@
 ## Description
 - This plugin will replace the pattern with the list of numbers generated.
-- Its basically g\<C-a> or g\<C-x> on steroids from command-line 
-- ~250 SLOC - super lightweight plugin
+- Its basically \<C-a> or \<C-x> on steroids from command-line 
 - See [examples](https://github.com/svban/NumbSub.nvim?tab=readme-ov-file#examples) to better understand
 
 ## Installation
