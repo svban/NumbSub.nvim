@@ -1,5 +1,5 @@
 -- Load commands
-local commands = require("numbsub.subst_with_num")
+local commands = require("numbsub.numbsub")
 local myCommand = "NumbSub"
 
 -- Define the custom command in Neovim
