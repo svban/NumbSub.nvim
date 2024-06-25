@@ -64,14 +64,70 @@ define MEM_ADD3 5
 
 ``` vim
 :NumbSub p\d\+$ S5 ma w
-define MEM_ADD0 06
-define MEM_ADD1 06
-define MEM_ADD1 07
-define MEM_ADD2 07
-define MEM_ADD3 08
-define MEM_ADD0 08
-define MEM_ADD1 09
-define MEM_ADD2 09
-define MEM_ADD3 10
-define MEM_ADD3 10
+define MEM_ADD0 05
+define MEM_ADD1 05
+define MEM_ADD1 05
+define MEM_ADD2 05
+define MEM_ADD3 05
+define MEM_ADD0 05
+define MEM_ADD1 15
+define MEM_ADD2 05
+define MEM_ADD3 05
+define MEM_ADD3 05
+```
+
+``` vim
+:NumbSub s1 p\d\+$ S1 n2 mp w3
+define MEM_ADD0 1
+define MEM_ADD1 1
+define MEM_ADD1 2
+define MEM_ADD2 2
+define MEM_ADD3 3
+define MEM_ADD0 3
+define MEM_ADD1 14
+define MEM_ADD2 4
+define MEM_ADD3 5
+define MEM_ADD3 5
+```
+
+``` vim
+:NumbSub s1 p\d\+$ S1 n2 mr
+define MEM_ADD0 5
+define MEM_ADD1 5
+define MEM_ADD1 4
+define MEM_ADD2 4
+define MEM_ADD3 3
+define MEM_ADD0 3
+define MEM_ADD1 2
+define MEM_ADD2 2
+define MEM_ADD3 1
+define MEM_ADD3 1
+```
+
+``` vim
+:NumbSub s1 p\d\+$ S1 n2 mR
+define MEM_ADD0 10
+define MEM_ADD1 10
+define MEM_ADD1 9
+define MEM_ADD2 9
+define MEM_ADD3 8
+define MEM_ADD0 8
+define MEM_ADD1 7
+define MEM_ADD2 7
+define MEM_ADD3 6
+define MEM_ADD3 6
+```
+
+``` vim
+:NumbSub s1 p\d\+$ S-1 n1 ms W
+define MEM_ADD0 01
+define MEM_ADD1 00
+define MEM_ADD1 -1
+define MEM_ADD2 -2
+define MEM_ADD3 -3
+define MEM_ADD0 -4
+define MEM_ADD1 -5
+define MEM_ADD2 -6
+define MEM_ADD3 -7
+define MEM_ADD3 -8
 ```
