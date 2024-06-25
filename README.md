@@ -35,20 +35,43 @@
 
 ### Before
 ``` vim
-case
-      addr@: begin value@ = offset@+incr@; end
-      addr@: begin value@ = offset@+incr@; end
-      addr@: begin value@ = offset@+incr@; end
-end 
+define MEM_ADD0 0
+define MEM_ADD1 0
+define MEM_ADD1 0
+define MEM_ADD2 0
+define MEM_ADD3 0
+define MEM_ADD0 0
+define MEM_ADD1 10
+define MEM_ADD2 0
+define MEM_ADD3 0
+define MEM_ADD3 0
 ```
 
 ### After
 ``` vim
-:NumbSub s1 p@ S1 n4
-case
-      addr1: begin value1 = offset1+incr1; end
-      addr2: begin value2 = offset2+incr2; end
-      addr3: begin value3 = offset3+incr3; end
-end 
+:NumbSub s1 p@ S1 n2 ms
+define MEM_ADD0 1
+define MEM_ADD1 1
+define MEM_ADD1 2
+define MEM_ADD2 2
+define MEM_ADD3 3
+define MEM_ADD0 3
+define MEM_ADD1 4
+define MEM_ADD2 4
+define MEM_ADD3 5
+define MEM_ADD3 5
 ```
 
+``` vim
+:NumbSub p\d\+$ S5 ma w
+define MEM_ADD0 06
+define MEM_ADD1 06
+define MEM_ADD1 07
+define MEM_ADD2 07
+define MEM_ADD3 08
+define MEM_ADD0 08
+define MEM_ADD1 09
+define MEM_ADD2 09
+define MEM_ADD3 10
+define MEM_ADD3 10
+```
