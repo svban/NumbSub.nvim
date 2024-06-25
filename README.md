@@ -32,3 +32,22 @@
 - **ma** : add - add step to the pattern, only **S** and **p** is mandatory when using this mode
 
 ## Examples
+
+### Before
+```
+case
+      addr@: begin value@ = offset@+incr@; end
+      addr@: begin value@ = offset@+incr@; end
+      addr@: begin value@ = offset@+incr@; end
+end 
+```
+
+- `:NumbSub s1 p@ S1 n4`
+```
+case
+      addr1: begin value1 = offset1+incr1; end
+      addr2: begin value2 = offset2+incr2; end
+      addr3: begin value3 = offset3+incr3; end
+end 
+```
+
