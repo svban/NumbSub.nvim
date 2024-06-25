@@ -34,7 +34,7 @@
 ## Examples
 
 ### Before
-```
+``` vim
 case
       addr@: begin value@ = offset@+incr@; end
       addr@: begin value@ = offset@+incr@; end
@@ -42,8 +42,9 @@ case
 end 
 ```
 
-- `:NumbSub s1 p@ S1 n4`
-```
+### After
+``` vim
+:NumbSub s1 p@ S1 n4
 case
       addr1: begin value1 = offset1+incr1; end
       addr2: begin value2 = offset2+incr2; end
