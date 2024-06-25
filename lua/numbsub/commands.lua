@@ -79,7 +79,7 @@ function M.subst_with_num(args)
 		elseif arg:sub(1, 1) == "p" and i ~= #parts then
 			pattern = arg:sub(2)
 		elseif arg:sub(1, 1) == "n" then
-			n = tonumber(arg:sub(2))
+			n = math.abs(tonumber(arg:sub(2))) -- Ensure n is always positive
 		elseif arg:sub(1, 1) == "S" then
 			step_value = tonumber(arg:sub(2))
 			if step_value == nil then
