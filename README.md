@@ -2,7 +2,7 @@
 - This plugin will replace the pattern with the list of numbers generated.
 - Its basically g<C-a> or g<C-x> on steroids from command-line 
 - ~250 SLOC - super lightweight plugin
-- See (examples)[https://github.com/svban/NumbSub.nvim?tab=readme-ov-file#examples] to better understand
+- See [examples](https://github.com/svban/NumbSub.nvim?tab=readme-ov-file#examples) to better understand
 
 ## Installation
 ###  with Lazy.nvim
