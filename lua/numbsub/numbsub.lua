@@ -1,7 +1,7 @@
 local M = {}
 
 local subst_counter = 0
-local RegexUtil = require("numbsub.regex_util")
+local RegexUtil = require("lua.numbsub.regex_util")
 
 function reset_counters()
 	subst_counter = 0
