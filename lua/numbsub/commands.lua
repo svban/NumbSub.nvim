@@ -3,7 +3,7 @@ local M = {}
 local subst_counter = 0
 local RegexUtil = require("numbsub.regex_util")
 
-function reset_counters()
+local function reset_counters()
 	subst_counter = 0
 end
 
