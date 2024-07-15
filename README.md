@@ -15,16 +15,16 @@
 
 ## Usage: 
 ``` vim
-:NumbSub p<pattern> s<start> n<count> S<step> [w<width>|W<width>|w|W] m<s|a|p|r|R> [c]
+:NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [c]
 ```
 
 ## Arguments
-- **s** - start of the sequence
-- **S** - step size
-- **n** - add step size only after n substitutions, for example increase counter only after 4 substitutions
 - **p** - define the pattern here - should be a number only while using mp & ma
-- [**w**] - width - specify a number with w<width> or use only w for autowidth - doesn't take negative sign into account
-- [**W**] - Width - specify a number with W<width> or use only W for autowidth - takes negative sign into account
+- [**s**] - start of the sequence - defaults to 0 if not provided
+- [**S**] - step size - defaults to 1 if not provided
+- [**n**] - add step size only after n substitutions, for example increase counter only after 4 substitutions - defaults to 1 if not provided
+- [**w**] - width - specify a number with w<width> or use only w for auto width - doesn't take negative sign into account
+- [**W**] - Width - specify a number with W<width> or use only W for auto width - takes negative sign into account
 - [**c**] - confirm on each match
 ### Modes
 - **ms** : sequence - just replace the pattern with the list of numbers generated
@@ -51,7 +51,7 @@ define MEM_ADD3 0
 
 ### After
 ``` vim
-:NumbSub s1 p\d\+$ S1 n2 ms
+:NumbSub s1 p\d\+$ n2 ms
 define MEM_ADD0 1
 define MEM_ADD1 1
 define MEM_ADD1 2
