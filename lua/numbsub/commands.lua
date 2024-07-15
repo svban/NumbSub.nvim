@@ -80,6 +80,10 @@ function M.subst_with_num(args)
 			pattern = arg:sub(2)
 		elseif arg:sub(1, 1) == "n" then
 			n = math.abs(tonumber(arg:sub(2))) -- Ensure n is always positive
+			if n == 0 then
+				print("n should not be zero.")
+				return
+			end
 		elseif arg:sub(1, 1) == "S" then
 			step_value = tonumber(arg:sub(2))
 			if step_value == nil then
@@ -121,23 +125,15 @@ function M.subst_with_num(args)
 	end
 
 	-- Validate parsed arguments
-	if mode == "ma" then
-		if pattern == nil or step_value == nil then
-			print(
-				"Invalid arguments. Usage for mode 'ma': :NumbSub p<pattern> S<step> [w<width>|W<width>|w|W] m<a> [c]"
-			)
-			return
-		end
-		start = start or 0 -- Default start to 0 if not provided
-		n = n or 1 -- Default n to 1 if not provided
-	else
-		if start == nil or pattern == nil or n == nil or step_value == nil or mode == nil then
-			print(
-				"Invalid arguments. Usage: :NumbSub s<start> p<pattern> n<count> S<step> [w<width>|W<width>|w|W] m<s|a|p|r|R> [c]"
-			)
-			return
-		end
+	if pattern == nil or mode == nil then
+		print(
+			"Invalid arguments. Usage: :NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [c]"
+		)
+		return
 	end
+	start = start or 0 -- Default start to 0 if not provided
+	step_value = step_value or 1 -- Default step_value to 1 if not provided
+	n = n or 1 -- Default n to 1 if not provided
 
 	reset_counters()
 
