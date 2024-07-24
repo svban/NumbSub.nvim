@@ -19,7 +19,7 @@
 ```
 
 ## Arguments
-- **p** - define the pattern here - should be a number only while using mp & ma
+- **p** - define the pattern here - should be a number only pattern while using mp & ma
 - [**s**] - start of the sequence - defaults to 0 if not provided
 - [**S**] - step size - defaults to 1 if not provided
 - [**n**] - add step size only after n substitutions, for example increase counter only after 4 substitutions - defaults to 1 if not provided
