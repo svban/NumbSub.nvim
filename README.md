@@ -80,16 +80,16 @@ define MEM_ADD3 05
 
 ``` vim
 :NumbSub s1 p\d\+$ S1 n2 mp w3
-define MEM_ADD0 1
-define MEM_ADD1 1
-define MEM_ADD1 2
-define MEM_ADD2 2
-define MEM_ADD3 3
-define MEM_ADD0 3
-define MEM_ADD1 14
-define MEM_ADD2 4
-define MEM_ADD3 5
-define MEM_ADD3 5
+define MEM_ADD0 001
+define MEM_ADD1 001
+define MEM_ADD1 002
+define MEM_ADD2 002
+define MEM_ADD3 003
+define MEM_ADD0 003
+define MEM_ADD1 014
+define MEM_ADD2 004
+define MEM_ADD3 005
+define MEM_ADD3 005
 ```
 
 ``` vim
