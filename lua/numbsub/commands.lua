@@ -38,8 +38,26 @@ local function zero_pad(num, width, exclude_sign)
 	end
 end
 
-function subst_num(start, step_value, n, current_value, mode, width, max_subst_counter, exclude_sign)
+function Subst_num(
+	start,
+	step_value,
+	n,
+	current_value,
+	mode,
+	width,
+	max_subst_counter,
+	exclude_sign,
+	loop_n,
+	loop_total
+)
 	local result_value
+
+	-- Reset logic for loop mode
+	if loop_n and subst_counter % (loop_n * n) == 0 and subst_counter ~= 0 then
+		reset_counters()
+	elseif loop_total and subst_counter % loop_total == 0 and subst_counter ~= 0 then
+		reset_counters()
+	end
 
 	if mode == "ms" then
 		result_value = zero_pad(start + (math.floor(subst_counter / n) * step_value), width, exclude_sign)
@@ -65,7 +83,7 @@ end
 
 function M.subst_with_num(args)
 	-- Initialize variables
-	local start, pattern, n, step_value, mode, confirm, width, exclude_sign, auto_width
+	local start, pattern, n, step_value, mode, confirm, width, exclude_sign, auto_width, loop_n, loop_total
 
 	-- Trim any leading or trailing whitespace
 	args = args:match("^%s*(.-)%s*$")
@@ -76,10 +94,15 @@ function M.subst_with_num(args)
 		local arg = parts[i]
 		if arg:sub(1, 1) == "s" then
 			start = tonumber(arg:sub(2))
-		elseif arg:sub(1, 1) == "p" and i ~= #parts then
+		elseif arg:sub(1, 1) == "p" then
 			pattern = arg:sub(2)
 		elseif arg:sub(1, 1) == "n" then
-			n = math.abs(tonumber(arg:sub(2))) -- Ensure n is always positive
+			local num = tonumber(arg:sub(2))
+			if not num then
+				print("Invalid n value: " .. arg:sub(2))
+				return
+			end
+			n = math.abs(num)
 			if n == 0 then
 				print("n should not be zero.")
 				return
@@ -88,14 +111,6 @@ function M.subst_with_num(args)
 			step_value = tonumber(arg:sub(2))
 			if step_value == nil then
 				print("Invalid step value:", arg:sub(2))
-				return
-			end
-			if step_value > 0 then
-				mode = "ms"
-			elseif step_value < 0 then
-				mode = "mp"
-			else
-				print("Step value should not be zero.")
 				return
 			end
 		elseif arg:sub(1, 1) == "w" then
@@ -114,6 +129,18 @@ function M.subst_with_num(args)
 				auto_width = true
 				exclude_sign = false
 			end
+		elseif arg:sub(1, 1) == "l" then
+			loop_n = tonumber(arg:sub(2))
+			if not loop_n then
+				print("Invalid loop count for l.")
+				return
+			end
+		elseif arg:sub(1, 1) == "L" then
+			loop_total = tonumber(arg:sub(2))
+			if not loop_total then
+				print("Invalid loop count for L.")
+				return
+			end
 		elseif arg:match("^m[saprR]$") then
 			mode = arg -- Assign the mode directly (ms, ma, mp, mr)
 		elseif arg == "c" then
@@ -127,7 +154,7 @@ function M.subst_with_num(args)
 	-- Validate parsed arguments
 	if pattern == nil or mode == nil then
 		print(
-			"Invalid arguments. Usage: :NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [c]"
+			"Invalid arguments. Usage: :NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [l<loop>|L<loop>] [c]"
 		)
 		return
 	end
@@ -157,8 +184,9 @@ function M.subst_with_num(args)
 		local max_value, min_value, max_width
 		-- Calculate the value after all substitutions
 		if mode == "ma" or mode == "mp" then
+			---@diagnostic disable-next-line: param-type-mismatch
 			for _, line in ipairs(vim.fn.getline(1, "$")) do
-				local matches = RegexUtil.get_vim_matches(pattern, line)
+				local matches = RegexUtil.get_vim_matches(pattern, line) -- line is a string ✅
 				for _, match in ipairs(matches) do
 					local current_value = tonumber(match)
 					local result_value = start + current_value + (math.floor(subst_counter / n) * step_value)
@@ -173,11 +201,12 @@ function M.subst_with_num(args)
 			end
 			reset_counters()
 		else
-			max_value = start + (max_subst_counter * step_value)
+			local effective_steps = math.floor((total_matches - 1) / n)
+			max_value = start + (effective_steps * step_value)
 			min_value = start
 			-- Adjust min_value if step_value is negative
 			if step_value < 0 then
-				min_value = start + (max_subst_counter * step_value)
+				min_value = start + (effective_steps * step_value)
 			end
 		end
 
@@ -207,7 +236,18 @@ function M.subst_with_num(args)
 			current_value = start
 		end
 
-		return subst_num(start, step_value, n, current_value, mode, width, max_subst_counter, exclude_sign)
+		return Subst_num(
+			start,
+			step_value,
+			n,
+			current_value,
+			mode,
+			width,
+			max_subst_counter,
+			exclude_sign,
+			loop_n,
+			loop_total
+		)
 	end
 
 	-- Construct the Vim command for substitution

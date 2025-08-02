@@ -15,7 +15,7 @@
 
 ## Usage: 
 ``` vim
-:NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [c]
+:NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [l<loop>|L<loop>] [c]
 ```
 
 ## Arguments
@@ -25,11 +25,13 @@
 - [**n**] - add step size only after n substitutions, for example increase counter only after 4 substitutions - defaults to 1 if not provided
 - [**w**] - width - specify a number with w<width> or use only w for auto width - doesn't take negative sign into account
 - [**W**] - Width - specify a number with W<width> or use only W for auto width - takes negative sign into account
+- [**l**] - loop - loop the pattern after l*n.
+- [**L**] - loop - loop the pattern after l.
 - [**c**] - confirm on each match
 ### Modes
 - **ms** : sequence - just replace the pattern with the list of numbers generated
 - **mr** : reverse sequence - start replacing pattern from the bottom of the list generated and then take n in to account
-- **mR** : Reverse sequence - first take n into account, start replacing pattern from the bottom of the list generated
+- **mR** : Reverse sequence - first take number of matches into account then start replacing pattern from the bottom of the list generated
 - **mp** : progressive - add list of numbers generated to the pattern
 - **ma** : add - add step to the pattern, only **S** and **p** is mandatory when using this mode
 
@@ -132,6 +134,34 @@ define MEM_ADD1 -5
 define MEM_ADD2 -6
 define MEM_ADD3 -7
 define MEM_ADD3 -8
+```
+
+``` vim
+:NumbSub s1 p\d\+$ S1 n2 ms l3
+define MEM_ADD0 1
+define MEM_ADD1 1
+define MEM_ADD1 2
+define MEM_ADD2 2
+define MEM_ADD3 3
+define MEM_ADD0 3
+define MEM_ADD1 1
+define MEM_ADD2 1
+define MEM_ADD3 2
+define MEM_ADD3 2
+```
+
+``` vim
+:NumbSub s1 p\d\+$ S1 n2 ms L3
+define MEM_ADD0 1
+define MEM_ADD1 1
+define MEM_ADD1 2
+define MEM_ADD2 1
+define MEM_ADD3 1
+define MEM_ADD0 2
+define MEM_ADD1 1
+define MEM_ADD2 1
+define MEM_ADD3 2
+define MEM_ADD3 1
 ```
 
 ## Inspirations
