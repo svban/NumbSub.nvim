@@ -28,7 +28,7 @@
 - [**l**] - loop - loop the pattern after l*n.
 - [**L**] - loop - loop the pattern after l.
 - [**c**] - confirm on each match
-- [**fmt:**] - uses lua string.format(), similar to C's printf. Ex - `:NumbSub p\d\+ ms s0 S0.25 fmt:%.2f` `:NumbSub p\d\+ ms s0 S0.25 fmt:Label_%02d`
+- [**fmt:**] - uses lua string.format(), similar to C's printf. 
 ### Modes
 - **ms** : sequence - just replace the pattern with the list of numbers generated
 - **mr** : reverse sequence - start replacing pattern from the bottom of the list generated and then take n in to account
@@ -40,129 +40,157 @@
 
 ### Before
 ``` vim
-define MEM_ADD0 0
-define MEM_ADD1 0
-define MEM_ADD1 0
-define MEM_ADD2 0
-define MEM_ADD3 0
-define MEM_ADD0 0
-define MEM_ADD1 10
-define MEM_ADD2 0
-define MEM_ADD3 0
-define MEM_ADD3 0
+0
+0
+0
+0
+0
+0
+10
+0
+0
+0
 ```
 
 ### After
 ``` vim
 :NumbSub s1 p\d\+$ n2 ms
-define MEM_ADD0 1
-define MEM_ADD1 1
-define MEM_ADD1 2
-define MEM_ADD2 2
-define MEM_ADD3 3
-define MEM_ADD0 3
-define MEM_ADD1 4
-define MEM_ADD2 4
-define MEM_ADD3 5
-define MEM_ADD3 5
+1
+1
+2
+2
+3
+3
+4
+4
+5
+5
 ```
 
 ``` vim
 :NumbSub p\d\+$ S5 ma w
-define MEM_ADD0 05
-define MEM_ADD1 05
-define MEM_ADD1 05
-define MEM_ADD2 05
-define MEM_ADD3 05
-define MEM_ADD0 05
-define MEM_ADD1 15
-define MEM_ADD2 05
-define MEM_ADD3 05
-define MEM_ADD3 05
+05
+05
+05
+05
+05
+05
+15
+05
+05
+05
 ```
 
 ``` vim
 :NumbSub s1 p\d\+$ S1 n2 mp w3
-define MEM_ADD0 001
-define MEM_ADD1 001
-define MEM_ADD1 002
-define MEM_ADD2 002
-define MEM_ADD3 003
-define MEM_ADD0 003
-define MEM_ADD1 014
-define MEM_ADD2 004
-define MEM_ADD3 005
-define MEM_ADD3 005
+001
+001
+002
+002
+003
+003
+014
+004
+005
+005
 ```
 
 ``` vim
 :NumbSub s1 p\d\+$ S1 n2 mr
-define MEM_ADD0 5
-define MEM_ADD1 5
-define MEM_ADD1 4
-define MEM_ADD2 4
-define MEM_ADD3 3
-define MEM_ADD0 3
-define MEM_ADD1 2
-define MEM_ADD2 2
-define MEM_ADD3 1
-define MEM_ADD3 1
+5
+5
+4
+4
+3
+3
+2
+2
+1
+1
 ```
 
 ``` vim
 :NumbSub s1 p\d\+$ S1 n2 mR
-define MEM_ADD0 10
-define MEM_ADD1 10
-define MEM_ADD1 9
-define MEM_ADD2 9
-define MEM_ADD3 8
-define MEM_ADD0 8
-define MEM_ADD1 7
-define MEM_ADD2 7
-define MEM_ADD3 6
-define MEM_ADD3 6
+10
+10
+9
+9
+8
+8
+7
+7
+6
+6
 ```
 
 ``` vim
 :NumbSub s1 p\d\+$ S-1 n1 ms W
-define MEM_ADD0 01
-define MEM_ADD1 00
-define MEM_ADD1 -1
-define MEM_ADD2 -2
-define MEM_ADD3 -3
-define MEM_ADD0 -4
-define MEM_ADD1 -5
-define MEM_ADD2 -6
-define MEM_ADD3 -7
-define MEM_ADD3 -8
+01
+00
+-1
+-2
+-3
+-4
+-5
+-6
+-7
+-8
 ```
 
 ``` vim
 :NumbSub s1 p\d\+$ S1 n2 ms l3
-define MEM_ADD0 1
-define MEM_ADD1 1
-define MEM_ADD1 2
-define MEM_ADD2 2
-define MEM_ADD3 3
-define MEM_ADD0 3
-define MEM_ADD1 1
-define MEM_ADD2 1
-define MEM_ADD3 2
-define MEM_ADD3 2
+1
+1
+2
+2
+3
+3
+1
+1
+2
+2
 ```
 
 ``` vim
 :NumbSub s1 p\d\+$ S1 n2 ms L3
-define MEM_ADD0 1
-define MEM_ADD1 1
-define MEM_ADD1 2
-define MEM_ADD2 1
-define MEM_ADD3 1
-define MEM_ADD0 2
-define MEM_ADD1 1
-define MEM_ADD2 1
-define MEM_ADD3 2
-define MEM_ADD3 1
+1
+1
+2
+1
+1
+2
+1
+1
+2
+1
+```
+
+``` vim
+:NumbSub p\d\+$ ms s0 S0.25 fmt:%.2f
+0.00
+0.25
+0.50
+0.75
+1.00
+1.25
+1.50
+1.75
+2.00
+2.25
+```
+
+``` vim
+:NumbSub p\d\+ ms s0 S0.25 fmt:Label_%02d
+Label_00
+Label_00
+Label_00
+Label_00
+Label_01
+Label_01
+Label_01
+Label_01
+Label_02
+Label_02
 ```
 
 ## Inspirations
