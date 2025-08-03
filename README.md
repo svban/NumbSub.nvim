@@ -28,6 +28,7 @@
 - [**l**] - loop - loop the pattern after l*n.
 - [**L**] - loop - loop the pattern after l.
 - [**c**] - confirm on each match
+- [**fmt:**] - uses lua string.format(), similar to C's printf. Ex - `:NumbSub p\d\+ ms s0 S0.25 fmt:%.2f` `:NumbSub p\d\+ ms s0 S0.25 fmt:Label_%02d`
 ### Modes
 - **ms** : sequence - just replace the pattern with the list of numbers generated
 - **mr** : reverse sequence - start replacing pattern from the bottom of the list generated and then take n in to account
