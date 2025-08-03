@@ -7,8 +7,18 @@ local function reset_counters()
 	subst_counter = 0
 end
 
--- Function to pad number with zeros to specified width
-local function zero_pad(num, width, exclude_sign)
+-- Function to pad number with zeros to specified width or use format string
+local function format_number(num, width, exclude_sign, fmt)
+	if fmt then
+		local ok, formatted = pcall(string.format, fmt, num)
+		if ok then
+			return formatted
+		else
+			print("Invalid format string:", fmt)
+			return tostring(num)
+		end
+	end
+
 	local num_str = tostring(math.abs(num))
 	local num_len = #num_str
 
@@ -18,11 +28,11 @@ local function zero_pad(num, width, exclude_sign)
 
 		if num < 0 then
 			prefix = "-"
-			pad_width = pad_width - 1 -- Account for the negative sign
+			pad_width = pad_width - 1
 		end
 
 		if exclude_sign then
-			prefix = "" -- Exclude sign, so no need to add it back
+			prefix = ""
 			if num < 0 then
 				pad_width = width - num_len
 				return "-" .. string.rep("0", pad_width) .. num_str
@@ -48,11 +58,12 @@ function Subst_num(
 	max_subst_counter,
 	exclude_sign,
 	loop_n,
-	loop_total
+	loop_total,
+	format_string
 )
 	local result_value
+	local raw_value
 
-	-- Reset logic for loop mode
 	if loop_n and subst_counter % (loop_n * n) == 0 and subst_counter ~= 0 then
 		reset_counters()
 	elseif loop_total and subst_counter % loop_total == 0 and subst_counter ~= 0 then
@@ -60,36 +71,28 @@ function Subst_num(
 	end
 
 	if mode == "ms" then
-		result_value = zero_pad(start + (math.floor(subst_counter / n) * step_value), width, exclude_sign)
+		raw_value = start + (math.floor(subst_counter / n) * step_value)
 	elseif mode == "ma" then
-		result_value = zero_pad(current_value + step_value, width, exclude_sign)
-		zero_pad(start + current_value + (math.floor(subst_counter / n) * step_value), width, exclude_sign)
+		raw_value = current_value + step_value
 	elseif mode == "mp" then
-		result_value =
-			zero_pad(start + current_value + (math.floor(subst_counter / n) * step_value), width, exclude_sign)
+		raw_value = start + current_value + (math.floor(subst_counter / n) * step_value)
 	elseif mode == "mr" or mode == "mR" then
 		local max_value = start + (max_subst_counter * step_value)
 		local decrement_step = math.floor(subst_counter / n) * step_value
-		result_value = zero_pad(max_value - decrement_step, width, exclude_sign)
+		raw_value = max_value - decrement_step
 	else
 		error("Invalid mode. Use 'ms', 'ma', 'mp', 'mr' or 'mR'.")
 	end
 
-	-- Increment the subst_counter
 	subst_counter = subst_counter + 1
-
-	return result_value
+	return format_number(raw_value, width, exclude_sign, format_string)
 end
 
 function M.subst_with_num(args)
-	-- Initialize variables
-	local start, pattern, n, step_value, mode, confirm, width, exclude_sign, auto_width, loop_n, loop_total
+	local start, pattern, n, step_value, mode, confirm, width, exclude_sign, auto_width, loop_n, loop_total, format_string
 
-	-- Trim any leading or trailing whitespace
 	args = args:match("^%s*(.-)%s*$")
-
-	-- Parse arguments
-	local parts = vim.split(args, "%s+") -- Split by any whitespace character sequence (%s+)
+	local parts = vim.split(args, "%s+")
 	for i = 1, #parts do
 		local arg = parts[i]
 		if arg:sub(1, 1) == "s" then
@@ -141,8 +144,10 @@ function M.subst_with_num(args)
 				print("Invalid loop count for L.")
 				return
 			end
+		elseif arg:sub(1, 4) == "fmt:" then
+			format_string = arg:sub(5)
 		elseif arg:match("^m[saprR]$") then
-			mode = arg -- Assign the mode directly (ms, ma, mp, mr)
+			mode = arg
 		elseif arg == "c" then
 			confirm = "c"
 		else
@@ -151,44 +156,32 @@ function M.subst_with_num(args)
 		end
 	end
 
-	-- Validate parsed arguments
 	if pattern == nil or mode == nil then
 		print(
-			"Invalid arguments. Usage: :NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [l<loop>|L<loop>] [c]"
+			"Invalid arguments. Usage: :NumbSub p<pattern> m<s|a|p|r|R> [s<start>] [n<count>] [S<step>] [w|W|w<width>|W<width>] [l<loop>|L<loop>] [fmt:<format>] [c]"
 		)
 		return
 	end
-	start = start or 0 -- Default start to 0 if not provided
-	step_value = step_value or 1 -- Default step_value to 1 if not provided
-	n = n or 1 -- Default n to 1 if not provided
 
+	start = start or 0
+	step_value = step_value or 1
+	n = n or 1
 	reset_counters()
 
-	-- Count the total number of substitutions to calculate the correct starting point for mr and mR mode
 	local total_matches = 0
-	local lines = vim.fn.getline(1, "$")
-	for _, line in ipairs(lines) do
-		local matches = RegexUtil.get_vim_matches(pattern, line)
-		total_matches = total_matches + #matches
+	for _, line in ipairs(vim.fn.getline(1, "$")) do
+		total_matches = total_matches + #RegexUtil.get_vim_matches(pattern, line)
 	end
 
-	-- Calculate max_subst_counter based on the mode
-	local max_subst_counter
-	if mode == "mr" then
-		max_subst_counter = math.floor((total_matches - 1) / n)
-	else
-		max_subst_counter = math.floor(total_matches - 1)
-	end
+	local max_subst_counter = (mode == "mr") and math.floor((total_matches - 1) / n) or (total_matches - 1)
 
-	if auto_width then
-		local max_value, min_value, max_width
-		-- Calculate the value after all substitutions
+	if auto_width and not format_string then
+		local max_value, min_value
 		local temp_counter = 0
 
 		if mode == "ma" then
 			for _, line in ipairs(vim.fn.getline(1, "$")) do
-				local matches = RegexUtil.get_vim_matches(pattern, line)
-				for _, match in ipairs(matches) do
+				for _, match in ipairs(RegexUtil.get_vim_matches(pattern, line)) do
 					local current_value = tonumber(match)
 					local result_value = current_value + step_value
 					if not max_value or result_value > max_value then
@@ -201,8 +194,7 @@ function M.subst_with_num(args)
 			end
 		elseif mode == "mp" then
 			for _, line in ipairs(vim.fn.getline(1, "$")) do
-				local matches = RegexUtil.get_vim_matches(pattern, line)
-				for _, match in ipairs(matches) do
+				for _, match in ipairs(RegexUtil.get_vim_matches(pattern, line)) do
 					local current_value = tonumber(match)
 					local result_value = start + current_value + (math.floor(temp_counter / n) * step_value)
 					if not max_value or result_value > max_value then
@@ -215,15 +207,9 @@ function M.subst_with_num(args)
 				end
 			end
 		else
-			local effective_steps
-			if loop_n then
-				effective_steps = loop_n - 1
-			elseif loop_total then
-				effective_steps = math.floor((loop_total - 1) / n)
-			else
-				effective_steps = math.floor((total_matches - 1) / n)
-			end
-
+			local effective_steps = loop_n and (loop_n - 1)
+				or loop_total and math.floor((loop_total - 1) / n)
+				or math.floor((total_matches - 1) / n)
 			if step_value >= 0 then
 				max_value = start + (effective_steps * step_value)
 				min_value = start
@@ -233,14 +219,11 @@ function M.subst_with_num(args)
 			end
 		end
 
-		-- Calculate the maximum width needed for padding
 		local digits_max = #tostring(math.abs(max_value))
 		local digits_min = #tostring(math.abs(min_value))
 		local has_negative = (max_value < 0 or min_value < 0)
-
-		-- If width is 1 and no negatives, no padding needed
 		if digits_max <= 1 and digits_min <= 1 and not has_negative then
-			width = nil -- No padding
+			width = nil
 		else
 			width = math.max(digits_max, digits_min)
 			if not exclude_sign and has_negative then
@@ -249,7 +232,6 @@ function M.subst_with_num(args)
 		end
 	end
 
-	-- Define a helper function for the substitution
 	_G.subst_with_num_helper = function()
 		local current_value
 		if mode == "ma" or mode == "mp" then
@@ -275,11 +257,11 @@ function M.subst_with_num(args)
 			max_subst_counter,
 			exclude_sign,
 			loop_n,
-			loop_total
+			loop_total,
+			format_string
 		)
 	end
 
-	-- Construct the Vim command for substitution
 	local cmd = string.format(
 		"%%s/\\(%s\\)/\\=v:lua._G.subst_with_num_helper()/g" .. (confirm ~= "" and confirm or ""),
 		pattern
