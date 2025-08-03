@@ -183,41 +183,70 @@ function M.subst_with_num(args)
 	if auto_width then
 		local max_value, min_value, max_width
 		-- Calculate the value after all substitutions
-		if mode == "ma" or mode == "mp" then
-			---@diagnostic disable-next-line: param-type-mismatch
+		local temp_counter = 0
+
+		if mode == "ma" then
 			for _, line in ipairs(vim.fn.getline(1, "$")) do
-				local matches = RegexUtil.get_vim_matches(pattern, line) -- line is a string ✅
+				local matches = RegexUtil.get_vim_matches(pattern, line)
 				for _, match in ipairs(matches) do
 					local current_value = tonumber(match)
-					local result_value = start + current_value + (math.floor(subst_counter / n) * step_value)
+					local result_value = current_value + step_value
 					if not max_value or result_value > max_value then
 						max_value = result_value
 					end
 					if not min_value or result_value < min_value then
 						min_value = result_value
 					end
-					subst_counter = subst_counter + 1
 				end
 			end
-			reset_counters()
+		elseif mode == "mp" then
+			for _, line in ipairs(vim.fn.getline(1, "$")) do
+				local matches = RegexUtil.get_vim_matches(pattern, line)
+				for _, match in ipairs(matches) do
+					local current_value = tonumber(match)
+					local result_value = start + current_value + (math.floor(temp_counter / n) * step_value)
+					if not max_value or result_value > max_value then
+						max_value = result_value
+					end
+					if not min_value or result_value < min_value then
+						min_value = result_value
+					end
+					temp_counter = temp_counter + 1
+				end
+			end
 		else
-			local effective_steps = math.floor((total_matches - 1) / n)
-			max_value = start + (effective_steps * step_value)
-			min_value = start
-			-- Adjust min_value if step_value is negative
-			if step_value < 0 then
+			local effective_steps
+			if loop_n then
+				effective_steps = loop_n - 1
+			elseif loop_total then
+				effective_steps = math.floor((loop_total - 1) / n)
+			else
+				effective_steps = math.floor((total_matches - 1) / n)
+			end
+
+			if step_value >= 0 then
+				max_value = start + (effective_steps * step_value)
+				min_value = start
+			else
+				max_value = start
 				min_value = start + (effective_steps * step_value)
 			end
 		end
 
 		-- Calculate the maximum width needed for padding
-		max_width = math.max(#tostring(math.abs(max_value)), #tostring(math.abs(min_value)))
-		-- Adjust width to include sign if necessary
-		if not exclude_sign and (max_value < 0 or min_value < 0) then
-			max_width = max_width + 1 -- Add one for the negative sign
-		end
+		local digits_max = #tostring(math.abs(max_value))
+		local digits_min = #tostring(math.abs(min_value))
+		local has_negative = (max_value < 0 or min_value < 0)
 
-		width = max_width
+		-- If width is 1 and no negatives, no padding needed
+		if digits_max <= 1 and digits_min <= 1 and not has_negative then
+			width = nil -- No padding
+		else
+			width = math.max(digits_max, digits_min)
+			if not exclude_sign and has_negative then
+				width = width + 1
+			end
+		end
 	end
 
 	-- Define a helper function for the substitution
